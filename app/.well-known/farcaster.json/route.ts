@@ -1,32 +1,26 @@
-import { NextResponse } from "next/server";
-import { APP_URL } from "../../../lib/constants";
+import type { NextRequest } from "next/server";
 
-export async function GET() {
-  const farcasterConfig = {
-  // TODO: Add your own account association
-    accountAssociation: {
-    "header": "eyJmaWQiOjMyODg1NSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweERCOTczZjliNWI0MDhFMkZFNjNFQ2UzNjBEYjFjODU5YjQ5NDFFRTcifQ",
-    "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItbWluaWFwcC10ZW1wbGF0ZS1lYm9uLnZlcmNlbC5hcHAifQ",
-    "signature": "1bH6yx1yjJgF2olNGcmhAgsbS229TmERlvHsktnOqA88aDMQAPm+WSFEgqfIFtcRFIUsewD5Of72EVNKufxX3Bs="
-  },
+const DOMAIN = "https://farcaster-miniapp-template-blond.vercel.app";
+
+export async function GET(_req: NextRequest) {
+  const manifest = {
     frame: {
       version: "1",
-      name: "Trankil Farcaster MiniApp",
-      iconUrl: `${APP_URL}/images/icon.png`,
-      homeUrl: `${APP_URL}`,
-      imageUrl: `${APP_URL}/images/feed.png`,
-      screenshotUrls: [],
-      tags: ["Base", "farcaster", "miniapp", "template"],
-      primaryCategory: "developer-tools",
-      buttonTitle: "Launch Template",
-      splashImageUrl: `${APP_URL}/images/splash.png`,
+      name: "Flip Flop",
+      iconUrl: `${DOMAIN}/icon.png`,
+      homeUrl: DOMAIN,
+      imageUrl: `${DOMAIN}/og.png`,
+      buttonTitle: "Flip",
+      splashImageUrl: `${DOMAIN}/splash.png`,
       splashBackgroundColor: "#ffffff",
-      webhookUrl: `${APP_URL}/api/webhook`,
+      tags: ["Base", "Farcaster", "Mini App", "Game"],
+      primaryCategory: "games",
     },
-    baseBuilder: {
-    "ownerAddress": "0xF76f1bb47719cdaE7014b7c275168f17a1BA76aA"
-  },
   };
 
-  return NextResponse.json(farcasterConfig);
+  return Response.json(manifest, {
+    headers: {
+      "Cache-Control": "public, max-age=300",
+    },
+  });
 }
