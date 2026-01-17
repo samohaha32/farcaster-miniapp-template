@@ -9,7 +9,8 @@ export async function GET(_req: NextRequest) {
       name: "Flip Flop",
       iconUrl: `${DOMAIN}/icon.png`,
       homeUrl: DOMAIN,
-      imageUrl: `${DOMAIN}/og.png`,
+      // КЛЮЧЕВАЯ СТРОКА — новая картинка для превью в Farcaster
+      imageUrl: `${DOMAIN}/og-flipflop-v2.png?cachebust=${Date.now()}`,
       buttonTitle: "Flip",
       splashImageUrl: `${DOMAIN}/splash.png`,
       splashBackgroundColor: "#ffffff",
@@ -20,7 +21,7 @@ export async function GET(_req: NextRequest) {
 
   return Response.json(manifest, {
     headers: {
-      "Cache-Control": "public, max-age=300",
+      "Cache-Control": "public, max-age=60",
     },
   });
 }
