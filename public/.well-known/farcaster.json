@@ -1,0 +1,9 @@
+{
+  "name": "Flip Flop",
+  "iconUrl": "https://farcaster-miniapp-template-blond.vercel.app/icon.png",
+  "description": "Onchain coin flip on Base",
+  "frame": {
+    "homeUrl": "https://farcaster-miniapp-template-blond.vercel.app",
+    "fallbackUrl": "https://farcaster-miniapp-template-blond.vercel.app"
+  }
+}
