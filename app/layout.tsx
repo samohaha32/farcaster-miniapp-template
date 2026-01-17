@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     siteName: "Flip Flop",
     images: [
       {
-        url: "/og.png",
+        url: "/og-flipflop.png",
         width: 1200,
         height: 630,
         alt: "Flip Flop",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Flip Flop",
     description: "Onchain coin flip on Base",
-    images: ["/og.png"],
+    images: ["/og-flipflop.png"],
   },
   icons: {
     icon: "/icon.png",
