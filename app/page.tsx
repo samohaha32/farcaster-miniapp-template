@@ -19,22 +19,18 @@ export default function Page() {
   const [result, setResult] = useState<null | "HEADS" | "TAILS">(null);
   const [lastTx, setLastTx] = useState<`0x${string}` | null>(null);
 
-  // 1) Account
   const { address, isConnected, chainId } = useAccount();
 
-  // 2) Connect / Disconnect
   const { connectAsync, isPending: isConnecting, error: connectError } =
     useConnect();
   const { disconnect } = useDisconnect();
 
-  // 3) Switch chain
   const { switchChainAsync, isPending: isSwitching, error: switchError } =
     useSwitchChain();
 
-  // 4) Public client (for receipt logs)
+  // publicClient can be undefined (depends on config), so we must guard it
   const publicClient = usePublicClient({ chainId: BASE_CHAIN_ID });
 
-  // 5) Tx write
   const { writeContractAsync, isPending, error } = useWriteContract();
 
   const status = useMemo(() => {
@@ -53,17 +49,14 @@ export default function Page() {
     setResult(null);
     setLastTx(null);
 
-    // Ensure connected
     if (!isConnected) {
       await onConnect();
     }
 
-    // Ensure Base network
     if (chainId !== BASE_CHAIN_ID) {
       await switchChainAsync({ chainId: BASE_CHAIN_ID });
     }
 
-    // Send tx
     const txHash = await writeContractAsync({
       address: FLIPFLOP_ADDRESS,
       abi: FLIPFLOP_ABI,
@@ -73,12 +66,17 @@ export default function Page() {
 
     setLastTx(txHash);
 
-    // Wait for receipt (includes logs)
+    // ✅ FIX: guard for build + runtime safety
+    if (!publicClient) {
+      throw new Error(
+        "Public client is not available. Check wagmi config/publicClient setup."
+      );
+    }
+
     const receipt = await publicClient.waitForTransactionReceipt({
       hash: txHash,
     });
 
-    // Decode event Flipped(user, heads, id)
     for (const log of receipt.logs) {
       try {
         const decoded = decodeEventLog({
@@ -93,11 +91,10 @@ export default function Page() {
           return;
         }
       } catch {
-        // Not our event, ignore
+        // ignore
       }
     }
 
-    // If event wasn't found (ABI mismatch or different event name)
     setResult(null);
   }
 
@@ -127,7 +124,6 @@ export default function Page() {
           Click Flip → tx on Base → result comes from onchain event.
         </p>
 
-        {/* CONNECT BAR */}
         <div
           style={{
             marginTop: 12,
@@ -140,10 +136,7 @@ export default function Page() {
           <div style={{ fontSize: 12, opacity: 0.8, wordBreak: "break-all" }}>
             {isConnected ? `Connected: ${address}` : "Not connected"}
             {isConnected && (
-              <span style={{ opacity: 0.7 }}>
-                {" "}
-                · Chain: {chainId ?? "—"}
-              </span>
+              <span style={{ opacity: 0.7 }}> · Chain: {chainId ?? "—"}</span>
             )}
           </div>
 
@@ -175,7 +168,6 @@ export default function Page() {
           )}
         </div>
 
-        {/* COIN RESULT */}
         <div
           style={{
             marginTop: 16,
@@ -191,7 +183,6 @@ export default function Page() {
           {result ?? "🪙"}
         </div>
 
-        {/* FLIP BUTTON */}
         <button
           onClick={onFlip}
           disabled={isConnecting || isSwitching || isPending}
@@ -229,8 +220,7 @@ export default function Page() {
         )}
 
         <p style={{ marginTop: 12, opacity: 0.6, fontSize: 12 }}>
-          If the result doesn’t appear after confirmation, the event/ABI may be
-          different — send me the tx hash and I’ll adjust the decoder.
+          If result doesn’t appear, event/ABI may differ — send tx hash.
         </p>
       </div>
     </main>
